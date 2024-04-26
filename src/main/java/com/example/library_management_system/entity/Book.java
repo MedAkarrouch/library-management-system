@@ -29,30 +29,38 @@ public class Book {
     private String isbn;
     @Column(name="price")
     private Float price;
-    @Column(name="quanity")
+    @Column(name="quantity")
     private Integer quantity;
-    @Column(name="units_sold")
+    @Transient
     private Integer unitsSold;
-    @ManyToMany(cascade = {
-            CascadeType.DETACH,CascadeType.MERGE,
-            CascadeType.REFRESH,CascadeType.PERSIST,
-    })
+    @ManyToOne(cascade = {CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
+    @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(
             name = "purchases",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name="customer_id")
     )
-    List<Customer> customers = new ArrayList<>();
-    public Book(Long id, String title, String author, String genre, String isbn, Float price, Integer quantity, Integer unitsSold) {
-        this.id = id;
+    private List<Customer> customers = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "book_id")
+    private List<Purchase> purchases = new ArrayList<>();
+    public Book(String title, String author, String genre, String isbn, Float price, Integer quantity) {
         this.title = title;
         this.author = author;
         this.genre = genre;
         this.isbn = isbn;
         this.price = price;
         this.quantity = quantity;
-        this.unitsSold = unitsSold;
     }
+
+    public Integer getUnitsSold() {
+        if(purchases == null)
+            return 0;
+        return purchases.stream().mapToInt(Purchase::getQuantity).sum();
+    }
+
     public void add(Customer customer){
         customers.add(customer);
     }

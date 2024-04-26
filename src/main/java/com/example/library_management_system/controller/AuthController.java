@@ -14,11 +14,9 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,7 +31,7 @@ public class AuthController {
         this.jwtService = jwtService;
     }
     @PostMapping("/login")
-    public ResponseEntity<LoginUserResponse> login(@RequestBody LoginUserRequest request){
+    public ResponseEntity<LoginUserResponse> login(@RequestBody @Valid LoginUserRequest request){
         User user = authService.login(request);
         String token = jwtService.generateToken(user);
         return ResponseEntity.ok(new LoginUserResponse(token,user));

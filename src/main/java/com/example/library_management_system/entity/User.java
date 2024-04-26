@@ -32,31 +32,20 @@ public class User implements UserDetails {
     private String email;
     @Column(name="password")
     private String password;
-    @ManyToMany(fetch =FetchType.EAGER ,cascade = {
-            CascadeType.DETACH,CascadeType.MERGE,
-            CascadeType.PERSIST,CascadeType.REFRESH
-    })
-    @JoinTable(
-            name = "user_roles",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
-    private Set<Role> roles = new HashSet<>();
-
+//    @Column(name="enabled")
+//    private boolean enabled;
+    @Enumerated(value = EnumType.STRING)
+    @Column(name="role")
+    private ERole role;
     public User(String email,String password){
         this.email = email;
         this.password = password;
-    }
-    public void add(Role role){
-        roles.add(role);
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         Set<GrantedAuthority> authorities = new HashSet<>();
-        for(Role role : roles){
-            authorities.add(new SimpleGrantedAuthority(role.getName().toString()));
-        }
+        authorities.add(new SimpleGrantedAuthority(role.name()));
         return authorities;
     }
 

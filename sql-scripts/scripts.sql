@@ -6,38 +6,6 @@ DROP TABLE IF EXISTS `user_roles`;
 DROP TABLE IF EXISTS `roles`;
 DROP TABLE IF EXISTS `users`;
 
-CREATE TABLE `books`(
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    title VARCHAR(255) NOT NULL UNIQUE ,
-    author VARCHAR(255) NOT NULL,
-    genre VARCHAR(255) NOT NULL ,
-    isbn VARCHAR(20) NOT NULL,
-    price FLOAT NOT NULL DEFAULT 0,
-    quantity INTEGER NOT NULL DEFAULT 0,
-    units_sold INTEGER NOT NULL DEFAULT 0,
-    PRIMARY KEY (id)
-);
-CREATE TABLE `customers`(
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARBINARY(255) DEFAULT NULL,
-    phone_number VARCHAR(255) DEFAULT NULL,
-    PRIMARY KEY (id)
-);
-CREATE TABLE `purchases`(
-    book_id BIGINT NOT NULL,
-    customer_id BIGINT NOT NULL,
-    FOREIGN KEY (book_id) REFERENCES books(id),
-    FOREIGN KEY (customer_id) REFERENCES customers(id)
-);
-CREATE TABLE `suppliers`(
-    id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    email VARCHAR(255) DEFAULT NULL,
-    phone_number VARCHAR(255) DEFAULT NULL,
-    notes TEXT DEFAULT NULL,
-    PRIMARY KEY (id)
-);
 CREATE TABLE `roles`(
     id INTEGER NOT NULL AUTO_INCREMENT,
     name VARCHAR(255) NOT NUlL,
@@ -62,7 +30,51 @@ CREATE TABLE `user_roles`(
     PRIMARY KEY (user_id,role_id)
 );
 
-INSERT INTO roles(`name`) VALUES ('ROLE_SELLER'),('ROLE_ADMIN');
+INSERT INTO roles(`name`) VALUES ('ROLE_USER'),('ROLE_ADMIN');
 
-# SELECT * FROM roles;
 
+
+CREATE TABLE `books`(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    title VARCHAR(255) NOT NULL UNIQUE ,
+    author VARCHAR(255) NOT NULL,
+    genre VARCHAR(255) NOT NULL ,
+    isbn VARCHAR(20) NOT NULL,
+    price FLOAT NOT NULL DEFAULT 0,
+    quantity INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE `customers`(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARBINARY(255) DEFAULT NULL,
+    phone_number VARCHAR(255) DEFAULT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+CREATE TABLE `purchases`(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    book_id BIGINT NOT NULL,
+    customer_id BIGINT,
+    user_id BIGINT NOT NULL,
+    quantity INTEGER NOT NULL,
+    amount_paid FLOAT NOT NULL,
+    date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
+    PRIMARY KEY (id)
+);
+CREATE TABLE `suppliers`(
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) DEFAULT NULL,
+    phone_number VARCHAR(255) DEFAULT NULL,
+    notes TEXT DEFAULT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

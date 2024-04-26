@@ -4,10 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class StoreBookRequest {
+public class UpdateBookRequest {
+    private Long id;
     private String title;
     private String author;
     private String genre;

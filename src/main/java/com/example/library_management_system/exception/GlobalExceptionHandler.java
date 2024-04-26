@@ -14,6 +14,13 @@ import java.util.Map;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(InvalidEmailOrPasswordException.class)
+    public ResponseEntity<ErrorResponse> handleException(InvalidEmailOrPasswordException exc){
+        ErrorResponse response = ErrorResponse.builder()
+                .status(HttpStatus.BAD_REQUEST.value())
+                .message(exc.getMessage()).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+    }
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ValidationResponse> handleException(MethodArgumentNotValidException exc){
        Map<String,String> errors = new HashMap<>();
@@ -29,6 +36,6 @@ public class GlobalExceptionHandler {
         ErrorResponse error = new ErrorResponse();
         error.setStatus(HttpStatus.NOT_FOUND.value());
         error.setMessage(exc.getMessage());
-        return new ResponseEntity(error,HttpStatus.NOT_FOUND);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

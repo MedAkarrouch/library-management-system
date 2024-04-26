@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.engine.internal.Cascade;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,9 @@ public class Customer {
     private String email;
     @Column(name="phone_number")
     private String phoneNumber;
+    @ManyToOne(cascade={CascadeType.DETACH,CascadeType.MERGE,CascadeType.PERSIST,CascadeType.REFRESH})
+    @JoinColumn(name="user_id",referencedColumnName = "id")
+    private User user;
     @ManyToMany(cascade = {
             CascadeType.DETACH,CascadeType.MERGE,
             CascadeType.REFRESH,CascadeType.PERSIST,
@@ -35,13 +39,13 @@ public class Customer {
             inverseJoinColumns = @JoinColumn(name="book_id")
     )
     private List<Book> books = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "customer_id")
+    private List<Purchase> purchases = new ArrayList<>();
 
     public Customer(String name, String email, String phoneNumber) {
         this.name = name;
         this.email = email;
         this.phoneNumber = phoneNumber;
-    }
-    public void add(Book book){
-        books.add(book);
     }
 }
